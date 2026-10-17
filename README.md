@@ -5,14 +5,19 @@ CÁC HƯỚNG CẢI TIẾN:
 - sau khi nhận được hướng cải tiến của Ban giám khảo, nhóm thực hiện khảo sát thực tế dựa trên mô hình đã được huấn luyện trước đó. tổng kết được 345 bài khảo sát được thực hiện. Tổng số dữ liệu đang có là 507 mẫu. Mô hình có tính năng đánh giá sau khi có kết quả dự đoán, tức là người dùng cảm thấy dự đoán của mô hình chính xác so với thực tế thì họ sẽ đánh giá 4-5 sao. từ đó nhóm chỉ lấy những mẫu có đánh giá 4-5 sao để huấn luyện mô hình được chính xác hơn.
 2. Xem xét chất lượng mô hình FNN so với các mô hình khác khi số lượng đặc trưng còn hạn chế:
 - Sau khi có số lượng mẫu là 507, thì nhóm huấn luyện lại mô hình FNN, so sánh sự quan trọng của 7 đặc trưng và thấy rằng, việc lựa chọn ra 7 đặc trung còn nhiều hạn chế và hạn chế lớn nhất là đặc trung tổng. Đặc trưng tổng có độ quan trọng rất cao so với các đặc trưng còn lại, vì vậy nó khiến cho mô hình bị rò rỉ dữ liệu, tức là mô hình sẽ dựa trên tổng để dự đoán mức độ theo ngưỡng cắt cố định mà không xem xét các đặc trưng khác.
+<img width="1189" height="690" alt="image" src="https://github.com/user-attachments/assets/8e11b06a-8bd8-476d-bf79-39fd44977cb0" />
+
 - Vì vậy, nhóm tiến hiến lên ý tưởng cải tiến mô hình FNN với kĩ thuật K-fold Ensemble:
   + Kỹ thuật Tạo đặc trưng mới: Tạo thêm các chỉ số thống kê từ 10 câu hỏi như Q_mean (điểm trung bình), Q_std (độ lệch chuẩn giữa các câu), Q_max. Việc này khôi phục thông tin tổng quát mà không vi phạm quy tắc rò rỉ dữ liệu Tong.
+  + Tăng lên 3 tầng ẩn.
   + Cải tiến Kiến trúc FNN: Bổ sung BatchNormalization để ổn định luồng dữ liệu, đổi hàm kích hoạt sang mish (hoặc swish) cho độ mượt cao hơn relu, và thêm Dropout(0.15) để chống Overfitting.
   + Bộ điều chỉnh Học phí: Cho phép tăng epochs lên 300 – 400 an toàn; thuật toán sẽ tự động giảm Learning Rate khi gặp vùng tối ưu và dừng lại ở Epoch có kết quả tốt nhất.
   + Tăng từ 5-Fold lên 10-Fold Ensemble: Tăng số lượng mô hình tham gia bình chọn (Ensemble), giúp giảm thiểu tối đa các dự đoán sai lệch cá biệt.
 - sau đó, nhóm tiến hành so sánh với các mô hình khác là XGboost, Logistic Repression và SVM. khởi tạo kiến trúc của các mô hình với bộ dữ liệu, chuẩn hóa SMOTE ,IQR giống như huấn luyện mô hình FNN. Chỉ khác là kiến trúc của mỗi mô hình là khác nhau. Tạo 2 kiến trúc mạng bao gồm 7 đặc trưng có tổng và 11 đặc trưng không tổng. So sánh cho thấy:
 + đối với 7 đặc trung có tổng thì mô hình FNN và Xgboost có dộ chính xác ngang nhau và hơn hẳn các mô hình khác.
 + đối với 11 đặc trung cùng 3 đặc trưng thêm thì mô hình FNN hơn hẳn Xgboost và các mô hình còn lại.
+<img width="1183" height="583" alt="image" src="https://github.com/user-attachments/assets/5e873645-8cd5-4255-bd32-6f876cc2bc8d" />
+
 3. Việc cải tiến tính năng tư vấn để có thể chứng minh được tính cá nhân hóa và đúng khoa học:
   Giải pháp đưa ra:
 + định hướng RAG bằng SHAP/XAP từ mô hình dự đoán: kết quả phân tích từng đặc trưng truyền cho RAG để phân tích.
